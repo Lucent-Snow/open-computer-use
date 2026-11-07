@@ -4,6 +4,7 @@
 
 | 日期 | 功能域 | 用户价值 | 变更摘要 |
 | --- | --- | --- | --- |
+| 2026-11-07 | Jev 委派协议自检 | 桌面与浏览器两个 Jev 实现共用同一组可执行的契约向量，改动不再靠人工对照两份代码。 | 仓库内新增 7 个 conformance 向量的 fixture 副本与 `jev-protocol.test.mjs` CI 自检；跨语言 runner 同时校验 Rust 侧。见 [协议说明](../jev-delegate-protocol.md) 与 [变更记录](../histories/2026-11/20261107-1730-jev-delegate-protocol.md)。 |
 | 2026-11-07 | 实验性 Jev 桌面委派 | 上层 LLM 可把有界的多步桌面任务一次委派出去，减少逐步往返；默认关闭、不影响原有工具。 | `OCU_JEV=1` 时新增 `jev_desktop_run`，仅 AX 观察与语义动作，完成由代码验收；目标唯一时可跳过模型。真实 Jev 与 headless fixture 两步任务实测通过，见 [工具契约](../jev-desktop-run.md)。 |
 | 2026-11-07 | Locked Use 输入监控 | 兼容独占设备时仍检查键盘、指针等输入类别，避免误报健康。 | 逐设备管理回调与清理，热插拔 / 输入错误使当前监控失效；现有回归通过，按维护者决定先合并，Karabiner / Secure Input 接管实测留待发版后贡献者复测。见 [说明](../locked-use-input-monitor.md)。 |
 | 2026-11-07 | Locked Use 副屏遮罩 | 遮罩从创建时就放在目标屏幕上，避免依赖后续定位修正。 | 初始化改用屏幕局部坐标，保留严格覆盖检查；补物理双屏与左侧虚拟屏的真实前后对照。报告者锁屏环境的最终失败尚未完整复现，见 [验证说明](../locked-use-shield-placement.md)。 |

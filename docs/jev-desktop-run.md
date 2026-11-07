@@ -63,4 +63,5 @@ headless `OpenComputerUseFixture` + 编译后的 native MCP + 真实 `jev-1.14.0
 - fixture 走的是仓库自带的合成 AX 状态通道，在权限检查之前返回；**上述动作实测不是对第三方 App 的真实 TCC AX 遍历**。真实链路只验证到观察与候选构造层，没有对用户正在使用的窗口执行动作（避免干扰桌面）。
 - fixture 明确拒绝 `query`，因此确定性路径在 E2E 里走的是「当前 AX 观察唯一匹配」，不是 `query` 索引；单测另行覆盖了 `query` 唯一命中与陈旧索引被拒的分支。
 - 本地化 role 词表按本机样本整理，其他系统语言可能出现未枚举 role；这类行会保留为原样 role，不会导致整棵树解析失败，但候选优先级可能下降。
-- `require_controls` 是桌面侧为「两步任务」增加的必要扩展；浏览器侧的 `jev_browser_run` 用结果页独有字面证据达到同样目的。两者共性与差异在 M4 的协议文档里统一说明。
+- `require_controls` 是桌面侧为「两步任务」增加的必要扩展；浏览器侧的 `jev_browser_run` 用结果页独有字面证据达到同样目的。两者共性与差异在 [Jev 委派协议 v0.1](jev-delegate-protocol.md) 里统一说明，并由 `scripts/node-repl/jev-protocol.test.mjs` 对 7 个跨语言向量做 CI 自检。
+- M3 同后端对照实验的结论与负向结果见工作区 `jev-integration/protocol/m3-summary.md`；委派降低了 LLM 调用数与延时，但 OCU 上总模型 token 反而上升。

@@ -32,4 +32,4 @@
 
 - 动作实测基于仓库自带的 headless fixture（合成 AX 状态通道），不是对第三方 App 的真实 TCC 遍历；真实链路只验证到观察层。
 - 本地化 role 词表按本机样本整理，其他系统语言可能有未枚举 role。
-- 与 BrowserSkill 侧的共性抽象、以及 LLM 直调对照实验，属于后续 M3 / M4，未在本变更里做。
+- 与 BrowserSkill 侧的共性抽象、以及 LLM 直调对照实验，属于后续 M3 / M4，未在本变更里做；两者已于同日完成，见 `20261107-1730-jev-delegate-protocol.md`。
