@@ -229,6 +229,7 @@ node "${config_helper}" copy-into-dir "${plugin_install_root}" "${payload_path}"
 cp "${repl_source_root}/open-computer-use-repl.mjs" "${plugin_install_root}/scripts/open-computer-use-repl.mjs"
 cp "${repl_source_root}/open-computer-use-kernel.mjs" "${plugin_install_root}/scripts/open-computer-use-kernel.mjs"
 cp "${repl_source_root}/ocu-config.mjs" "${plugin_install_root}/scripts/ocu-config.mjs"
+cp "${repl_source_root}/jev-desktop-run.mjs" "${plugin_install_root}/scripts/jev-desktop-run.mjs"
 
 node "${config_helper}" codex-plugin-config "${config_path}" "${repo_root}" "${marketplace_name}" "${plugin_name}"
 

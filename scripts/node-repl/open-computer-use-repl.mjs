@@ -10,6 +10,7 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { Worker } from "node:worker_threads";
 import { inspectConfig } from "./ocu-config.mjs";
+import { jevDesktopRun, jevEnabled, jevToolDefinition } from "./jev-desktop-run.mjs";
 
 const require = createRequire(import.meta.url);
 // The js call whose code is running. Timers and promises carry it, so a callback
@@ -693,6 +694,11 @@ export async function runServer({ command, args }) {
       if (method === "ping") return send({ jsonrpc: "2.0", id, result: {} });
       if (method === "tools/list") return send({ jsonrpc: "2.0", id, result: { tools: toolDefinitions() } });
       if (method === "tools/call") {
+        if (params.name === "jev_desktop_run" && jevEnabled()) {
+          const cua = createCuaApi(native, () => ({ write() {}, emitImage() {} }));
+          const result = await jevDesktopRun(params.arguments ?? {}, { cua });
+          return send({ jsonrpc: "2.0", id, result: { content: [{ type: "text", text: JSON.stringify(result) }], isError: false } });
+        }
         if (params.name === "js_reset") { await session.reset(); return send({ jsonrpc: "2.0", id, result: { content: [{ type: "text", text: "Open Computer Use JavaScript session reset" }], isError: false } }); }
         if (params.name === "js") {
           const requestedTimeoutMs = params.arguments?.timeout_ms;
@@ -719,12 +725,15 @@ export async function runServer({ command, args }) {
   process.stdin.on("end", () => { void requestQueue.finally(shutdown); });
 }
 
-export function toolDefinitions() {
+export function toolDefinitions(environment = process.env) {
   const annotations = { destructiveHint: false, openWorldHint: false };
-  return [
+  const definitions = [
     { name: "js", description: JS_DESCRIPTION, annotations, inputSchema: { type: "object", additionalProperties: false, properties: { code: { type: "string", minLength: 1, description: "JavaScript source to execute with top-level await and the initialized cua API." }, timeout_ms: { type: "integer", minimum: 1, maximum: MAX_TIMEOUT_MS, description: "Optional timeout in milliseconds. Defaults to 30000 and is capped at 300000." }, title: { type: "string", minLength: 1, maxLength: 80, description: "Short user-facing description of what this code is doing." } }, required: ["code"] } },
     { name: "js_reset", description: RESET_DESCRIPTION, annotations: { ...annotations, readOnlyHint: true }, inputSchema: { type: "object", additionalProperties: false, properties: {} } },
   ];
+  // Experimental, so clients pay nothing unless the owner asks for it with OCU_JEV=1.
+  if (jevEnabled(environment)) definitions.push(jevToolDefinition());
+  return definitions;
 }
 
 if (process.argv[1] && realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))) {

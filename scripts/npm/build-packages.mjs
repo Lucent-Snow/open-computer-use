@@ -430,6 +430,7 @@ function copyInstallerScripts(packageRoot) {
     "ocu-config.mjs",
     "open-computer-use-repl.mjs",
     "open-computer-use-kernel.mjs",
+    "jev-desktop-run.mjs",
   ]) {
     cpSync(
       path.join(repoRoot, "scripts", "node-repl", scriptName),
@@ -447,6 +448,10 @@ function copyInstallerScripts(packageRoot) {
   cpSync(
     path.join(repoRoot, "scripts", "node-repl", "open-computer-use-kernel.mjs"),
     path.join(packageRoot, "plugins", "open-computer-use", "scripts", "open-computer-use-kernel.mjs")
+  );
+  cpSync(
+    path.join(repoRoot, "scripts", "node-repl", "jev-desktop-run.mjs"),
+    path.join(packageRoot, "plugins", "open-computer-use", "scripts", "jev-desktop-run.mjs")
   );
 
   for (const scriptName of [
