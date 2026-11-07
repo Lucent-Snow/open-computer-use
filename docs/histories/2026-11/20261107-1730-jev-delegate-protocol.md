@@ -7,7 +7,8 @@
 ## 实现与判断
 
 - **M3**：`jev-integration/m3_compare.py` 固定同一网关、同一上层模型 `gpt-5.6-luna`、同一 fixture 与同一独立验收，2 后端 × 2 组 × 3 次 = 12 次全成功。baseline 允许批处理（OCU 用持久 `js` REPL 一次调用批量动作，BSK 用 `bsk_plan`），避免把「每步一次 LLM 调用」做成稻草人基线。零副作用信号判断 `quick_check` 只从当前 turn 的工具回复里读，避免每轮 `sync` 刷新 `observation_id` 干扰被测会话。
-- **结论**：委派组在两个后端都降到 1 次 LLM / 1 次工具调用，墙钟 BSK 18173→9600 ms、OCU 8413.7→7470.3 ms；但 OCU 总模型 token 从 2589.7 升到 5026，因为 Jev 每步要带完整 AX state。网关无 cost 字段，token 只是费用代理。可读版见 `jev-integration/protocol/m3-summary.md`，原始 transcript 在 `m3_report.json`。
+- **结论**：委派组在两个后端都降到 1 次 LLM / 1 次工具调用，墙钟 BSK 18173→9600 ms、OCU 8413.7→7470.3 ms；但 OCU 总模型 token 从 2589.7 升到 5026，因为 Jev 每步要带完整 AX state。网关无 cost 字段，当时只把 token 当费用代理。可读版见 `jev-integration/protocol/m3-summary.md`，原始 transcript 在 `m3_report.json`。
+- **同日追加的成本实测纠正（以此为准）**：固定单一任务 T1 `submit-with-evidence`，4 条件 × 5 次 = 20/20 成功，按公开单价（LLM $0.20/$1.20 每 1M 输入/输出、Jev $0.042/1M 输入且输出免费、1 USD=6.6713 CNY）分别计价：BSK 委派成本为 baseline 的 0.167×（省 83.3%、时间省 39.9%），OCU 委派 token 涨到 1.95× 但成本只要 0.599×（省 40.1%、时间省 12.5%）。**token 多不等于更贵**，混合模型必须按模型分别计价。三种单价假设方向一致。见工作区 `cost_compare.py`、`pricing.json`、`cost_report.json` 与 `protocol/m3-summary.md`。
 - **M4 关键判断**：Rust/VOM 与 JS/AX 的观察解析、RPC 形态、动作 API 完全不同，共性只在契约与不变量，硬做跨语言共用 SDK 没有复用价值。因此落地为「一份规范 + 一组 conformance 向量 + 两个实现各自 CI 自检」，不新增运行时依赖。
 - **本仓库侧落地**：`scripts/tests/fixtures/jev-protocol-vectors.json`（canonical 的逐字节副本）、`scripts/node-repl/jev-protocol-selfcheck.mjs`（唯一的 JS 向量校验逻辑）、`scripts/node-repl/jev-protocol.test.mjs`（CI 自检）、`docs/jev-delegate-protocol.md`。跨语言 runner `protocol/conformance.mjs` 直接 import 同一个 selfcheck 模块，保证 CI 与 runner 跑的是同一段断言。
 
